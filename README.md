@@ -1,1 +1,1 @@
-# python_learning
+# python SQ learning
