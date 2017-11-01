@@ -1,34 +1,19 @@
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.support.ui import Select
+from fixture.Session import SessionHelper
 
 
 class Application:
-    def  __init__(self):
+    def __init__(self):
         self.wd = WebDriver()
         self.wd.implicitly_wait(60)
+        self.session = SessionHelper(self)
 
     def destroy(self):
         self.wd.quit()
 
     def open_homepage(self):
         self.wd.get("http://localhost/addressbook/")
-
-    def login(self, login, password):
-        self.open_homepage()
-        # open login form
-        self.wd.find_element_by_id("LoginForm").click()
-        # user enter
-        self.wd.find_element_by_name("user").click()
-        self.wd.find_element_by_name("user").clear()
-        self.wd.find_element_by_name("user").send_keys(login)
-        # password enter
-        self.wd.find_element_by_name("pass").click()
-        self.wd.find_element_by_name("pass").clear()
-        self.wd.find_element_by_name("pass").send_keys(password)
-        self.wd.find_element_by_xpath("//form[@id='LoginForm']/input[3]").click()
-
-    def logout(self):
-        self.wd.find_element_by_link_text("Logout").click()
 
     def open_home(self):
         self.wd.find_element_by_link_text("home").click()
