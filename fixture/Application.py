@@ -3,7 +3,7 @@ from selenium.webdriver.support.ui import Select
 
 
 class Application:
-    def __init__(self):
+    def  __init__(self):
         self.wd = WebDriver()
         self.wd.implicitly_wait(60)
 
