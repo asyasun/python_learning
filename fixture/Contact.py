@@ -42,3 +42,22 @@ class ContactHelper:
         wd.find_element_by_name("byear").send_keys(contact.birth_year)
         wd.find_element_by_xpath("//div[@id='content']/form/input[21]").click()
         self.open_home()
+
+    def delete_first_contact(self):
+        wd = self.app.wd
+        self.open_home()
+        wd.find_element_by_name("selected[]").click()
+        wd.find_element_by_css_selector('input[type="button"][value="Delete"]').click()
+        wd.switch_to_alert().accept()
+        self.open_home()
+
+    def edit_first_contact(self):
+        wd = self.app.wd
+        self.open_home()
+        wd.find_element_by_css_selector('img[title="Edit"]').click()
+        # Здесь будут какие-то действия по изменению контакта, например...
+        wd.find_element_by_name("firstname").click()
+        wd.find_element_by_name("firstname").send_keys("_edited")
+        #
+        wd.find_element_by_name("update").click()
+        self.open_home()

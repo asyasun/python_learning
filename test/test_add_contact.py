@@ -16,3 +16,4 @@ def test_add_empty_contact(app):
                                company="", mobile="", email="",
                                birth_day="", birth_month="", birth_year=""))
     app.session.logout()
+
