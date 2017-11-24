@@ -54,3 +54,7 @@ class ContactHelper:
         self.fill_group_form(contact)
         wd.find_element_by_name("update").click()
         self.open_home()
+
+    def count(self):
+        self.open_home()
+        return len(self.app.wd.find_elements_by_css_selector('img[title="Edit"]'))
