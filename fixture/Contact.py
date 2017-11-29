@@ -6,7 +6,10 @@ class ContactHelper:
         self.app = app
 
     def open_home(self):
-        self.app.wd.find_element_by_link_text("home").click()
+        wd = self.app.wd
+        if wd.current_url.endswith('addressbook/') and self.app.session.is_logged_in():
+            return
+        wd.find_element_by_link_text("home").click()
 
     def change_field_value(self, field_name, text):
         wd = self.app.wd
