@@ -7,8 +7,7 @@ def test_modify_contact_name(app):
         app.contact.create(Contact(name='new contact for edit'))
     old_contacts = app.contact.get_contact_list()
     app.contact.edit_first_contact(Contact(name="edited contact name"))
-    new_contacts = app.contact.get_contact_list()
-    assert len(old_contacts) == len(new_contacts)
+    assert len(old_contacts) == app.contact.count()
 
 
 def test_modify_contact_birth(app):
@@ -16,5 +15,4 @@ def test_modify_contact_birth(app):
         app.contact.create(Contact(name='new contact for edit'))
     old_contacts = app.contact.get_contact_list()
     app.contact.edit_first_contact(Contact(birth_month="December"))
-    new_contacts = app.contact.get_contact_list()
-    assert len(old_contacts) == len(new_contacts)
+    assert len(old_contacts) == app.contact.count()
