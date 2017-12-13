@@ -1,3 +1,6 @@
+from model.Group import Group
+
+
 class GroupHelper:
     def __init__(self, app):
         self.app = app
@@ -51,3 +54,13 @@ class GroupHelper:
     def count(self):
         self.open_group_page()
         return len(self.app.wd.find_elements_by_name("selected[]"))
+
+    def get_group_list(self):
+        wd = self.app.wd
+        self.open_group_page()
+        group_list = []
+        for element in wd.find_elements_by_css_selector("span.group"):
+            text = element.text
+            group_id = element.find_element_by_name('selected[]').get_attribute('value')
+            group_list.append(Group(name=text, group_id=group_id))
+        return group_list
