@@ -39,7 +39,7 @@ class ContactHelper:
         wd = self.app.wd
         wd.find_element_by_link_text("add new").click()
         self.fill_group_form(contact)
-        wd.find_element_by_xpath("//div[@id='content']/form/input[21]").click()
+        wd.find_element_by_xpath('//div[@id="content"]/form/input[21]').click()
         self.open_home()
         self.contact_cache = None
 
@@ -50,7 +50,7 @@ class ContactHelper:
         wd = self.app.wd
         self.open_home()
 
-        wd.find_elements_by_name("selected[]")[index].click()
+        wd.find_elements_by_name('selected[]')[index].click()
         wd.find_element_by_css_selector('input[type="button"][value="Delete"]').click()
         wd.switch_to_alert().accept()
 
