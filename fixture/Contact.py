@@ -1,5 +1,6 @@
 from selenium.webdriver.support.ui import Select
 from model.Contact import Contact
+import re
 
 
 class ContactHelper:
@@ -29,7 +30,10 @@ class ContactHelper:
         self.change_field_value("lastname", contact.last_name)
         self.change_field_value("nickname", contact.nickname)
         self.change_field_value("company", contact.company)
+        self.change_field_value("home", contact.phone)
         self.change_field_value("mobile", contact.mobile)
+        self.change_field_value("work", contact.work_phone)
+        self.change_field_value("phone2", contact.secondary_phone)
         self.change_field_value("email", contact.email)
         self.select_field_value("bmonth", contact.birth_month)
         self.select_field_value("bday", contact.birth_day)
@@ -62,14 +66,20 @@ class ContactHelper:
 
     def edit_contact_by_index(self, index, contact):
         wd = self.app.wd
-        self.open_home()
-
-        wd.find_elements_by_css_selector('img[title="Edit"]')[index].click()
+        self.open_contact_for_edit_by_index(index)
         self.fill_group_form(contact)
         wd.find_element_by_name("update").click()
 
         self.open_home()
         self.contact_cache = None
+
+    def open_contact_for_edit_by_index(self, index):
+        self.open_home()
+        self.app.wd.find_elements_by_css_selector('img[title="Edit"]')[index].click()
+
+    def open_contact_view_by_index(self, index):
+        self.open_home()
+        self.app.wd.find_elements_by_css_selector('img[title="Details"]')[index].click()
 
     def count(self):
         self.open_home()
@@ -82,13 +92,45 @@ class ContactHelper:
             wd = self.app.wd
             self.open_home()
             self.contact_cache = []
-            for element in wd.find_elements_by_css_selector('tr[name="entry"]'):
+            for element in wd.find_elements_by_name('entry'):
                 texts = element.find_elements_by_css_selector('td')
                 if texts:
                     last_name = texts[1].text
                     name = texts[2].text
+                    all_phones = texts[5].text
 
                     contact_id = element.find_element_by_name('selected[]').get_attribute('value')
-                    self.contact_cache.append(Contact(name=name, last_name=last_name, contact_id=contact_id))
+                    self.contact_cache.append(Contact(name=name, last_name=last_name, contact_id=contact_id,
+                                                      all_phones_from_homepage=all_phones))
 
         return list(self.contact_cache)
+
+    def get_contact_info_from_edit_page(self, index):
+        self.open_contact_for_edit_by_index(index)
+        wd = self.app.wd
+        firstname = wd.find_element_by_name('firstname').get_attribute('value')
+        lastname = wd.find_element_by_name('lastname').get_attribute('value')
+        id = wd.find_element_by_name('id').get_attribute('value')
+        phone = wd.find_element_by_name('home').get_attribute('value')
+        work_phone = wd.find_element_by_name('work').get_attribute('value')
+        mobile = wd.find_element_by_name('mobile').get_attribute('value')
+        secondary_phone = wd.find_element_by_name('phone2').get_attribute('value')
+        return Contact(name=firstname, last_name=lastname, contact_id=id, phone=phone,
+                       work_phone=work_phone, mobile=mobile, secondary_phone=secondary_phone)
+
+    def get_contact_info_from_view_page(self, index):
+        self.open_contact_view_by_index(index)
+        wd = self.app.wd
+        text = wd.find_element_by_id('content').text
+        phone = re.search("H: (.*)", text).group(1)
+        work_phone = re.search("W: (.*)", text).group(1)
+        mobile = re.search("M: (.*)", text).group(1)
+        secondary_phone = re.search("P: (.*)", text).group(1)
+        # firstname = wd.find_element_by_name('firstname').get_attribute('value')
+        # lastname = wd.find_element_by_name('lastname').get_attribute('value')
+        # id = wd.find_element_by_name('id').get_attribute('value')
+        # phone = wd.find_element_by_name('home').get_attribute('value')
+        # work_phone = wd.find_element_by_name('work').get_attribute('value')
+        # mobile = wd.find_element_by_name('mobile').get_attribute('value')
+        # secondary_phone = wd.find_element_by_name('phone2').get_attribute('value')
+        return Contact(phone=phone, work_phone=work_phone, mobile=mobile, secondary_phone=secondary_phone)
