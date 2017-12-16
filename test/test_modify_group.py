@@ -10,12 +10,3 @@ def test_modify_group_name(app):
     index = randrange(len(old_groups))
     app.group.edit_group_by_index(index, Group(name="edited group name"))
     assert len(old_groups) == app.group.count()
-
-
-def test_modify_group_header(app):
-    if app.group.count() == 0:
-        app.group.create(Group(name='new group for edit'))
-    old_groups = app.group.get_group_list()
-    index = randrange(len(old_groups))
-    app.group.edit_group_by_index(index, Group(header="edited group header"))
-    assert len(old_groups) == app.group.count()

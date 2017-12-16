@@ -103,3 +103,5 @@ ENV/
 geckodriver.exe
 
 .idea
+/data/contacts.json
+/data/groups.json
