@@ -30,11 +30,14 @@ class ContactHelper:
         self.change_field_value("lastname", contact.last_name)
         self.change_field_value("nickname", contact.nickname)
         self.change_field_value("company", contact.company)
+        self.change_field_value("address", contact.address)
         self.change_field_value("home", contact.phone)
         self.change_field_value("mobile", contact.mobile)
         self.change_field_value("work", contact.work_phone)
         self.change_field_value("phone2", contact.secondary_phone)
         self.change_field_value("email", contact.email)
+        self.change_field_value("email2", contact.email2)
+        self.change_field_value("email3", contact.email3)
         self.select_field_value("bmonth", contact.birth_month)
         self.select_field_value("bday", contact.birth_day)
         self.change_field_value("byear", contact.birth_year)
@@ -57,6 +60,7 @@ class ContactHelper:
         wd.find_elements_by_name('selected[]')[index].click()
         wd.find_element_by_css_selector('input[type="button"][value="Delete"]').click()
         wd.switch_to_alert().accept()
+        wd.find_element_by_css_selector("div.msgbox")
 
         self.open_home()
         self.contact_cache = None
@@ -93,30 +97,45 @@ class ContactHelper:
             self.open_home()
             self.contact_cache = []
             for element in wd.find_elements_by_name('entry'):
-                texts = element.find_elements_by_css_selector('td')
-                if texts:
-                    last_name = texts[1].text
-                    name = texts[2].text
-                    all_phones = texts[5].text
+                texts = element.find_elements_by_tag_name('td')
 
-                    contact_id = element.find_element_by_name('selected[]').get_attribute('value')
-                    self.contact_cache.append(Contact(name=name, last_name=last_name, contact_id=contact_id,
-                                                      all_phones_from_homepage=all_phones))
+                contact_id = texts[0].find_element_by_tag_name('input').get_attribute('value')
+                last_name = texts[1].text
+                name = texts[2].text
+                all_phones = texts[5].text
+                email_elements = texts[4].find_elements_by_css_selector('a')
+                all_emails = []
+                for email in email_elements:
+                    all_emails.append(email.text)
+                address = texts[3].text
+
+                self.contact_cache.append(Contact(name=name, last_name=last_name, contact_id=contact_id,
+                                                  all_phones_from_homepage=all_phones,
+                                                  all_emails=' '.join(all_emails), address=address))
 
         return list(self.contact_cache)
 
     def get_contact_info_from_edit_page(self, index):
         self.open_contact_for_edit_by_index(index)
         wd = self.app.wd
+
         firstname = wd.find_element_by_name('firstname').get_attribute('value')
         lastname = wd.find_element_by_name('lastname').get_attribute('value')
+        address = wd.find_element_by_name('address').get_attribute('value')
         id = wd.find_element_by_name('id').get_attribute('value')
+
         phone = wd.find_element_by_name('home').get_attribute('value')
         work_phone = wd.find_element_by_name('work').get_attribute('value')
         mobile = wd.find_element_by_name('mobile').get_attribute('value')
         secondary_phone = wd.find_element_by_name('phone2').get_attribute('value')
+
+        email1 = wd.find_element_by_name('email').get_attribute('value')
+        email2 = wd.find_element_by_name('email2').get_attribute('value')
+        email3 = wd.find_element_by_name('email3').get_attribute('value')
+
         return Contact(name=firstname, last_name=lastname, contact_id=id, phone=phone,
-                       work_phone=work_phone, mobile=mobile, secondary_phone=secondary_phone)
+                       work_phone=work_phone, mobile=mobile, secondary_phone=secondary_phone,
+                       email=email1, email2=email2, email3=email3, address=address)
 
     def get_contact_info_from_view_page(self, index):
         self.open_contact_view_by_index(index)

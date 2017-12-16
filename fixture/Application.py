@@ -15,7 +15,7 @@ class Application:
         else:
             raise ValueError('Unrecognized browser %s' % browser)
         self.base_url = base_url
-        self.wd.implicitly_wait(5)
+        self.wd.implicitly_wait(2)
         self.session = SessionHelper(self)
         self.group = GroupHelper(self)
         self.contact = ContactHelper(self)
