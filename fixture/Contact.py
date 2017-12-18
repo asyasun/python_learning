@@ -77,9 +77,22 @@ class ContactHelper:
         self.open_home()
         self.contact_cache = None
 
+    def edit_contact_by_id(self, id, contact):
+        wd = self.app.wd
+        self.open_contact_for_edit_by_id(id)
+        self.fill_group_form(contact)
+        wd.find_element_by_name("update").click()
+
+        self.open_home()
+        self.contact_cache = None
+
     def open_contact_for_edit_by_index(self, index):
         self.open_home()
         self.app.wd.find_elements_by_css_selector('img[title="Edit"]')[index].click()
+
+    def open_contact_for_edit_by_id(self, id):
+        self.open_home()
+        self.app.wd.find_element_by_css_selector("a[href='edit.php?id=%s']" % id).click()
 
     def open_contact_view_by_index(self, index):
         self.open_home()
@@ -145,11 +158,16 @@ class ContactHelper:
         work_phone = re.search("W: (.*)", text).group(1)
         mobile = re.search("M: (.*)", text).group(1)
         secondary_phone = re.search("P: (.*)", text).group(1)
-        # firstname = wd.find_element_by_name('firstname').get_attribute('value')
-        # lastname = wd.find_element_by_name('lastname').get_attribute('value')
-        # id = wd.find_element_by_name('id').get_attribute('value')
-        # phone = wd.find_element_by_name('home').get_attribute('value')
-        # work_phone = wd.find_element_by_name('work').get_attribute('value')
-        # mobile = wd.find_element_by_name('mobile').get_attribute('value')
-        # secondary_phone = wd.find_element_by_name('phone2').get_attribute('value')
         return Contact(phone=phone, work_phone=work_phone, mobile=mobile, secondary_phone=secondary_phone)
+
+    def delete_contact_by_id(self, id):
+        wd = self.app.wd
+        self.open_home()
+
+        wd.find_element_by_css_selector("input[value='%s']" % id).click()
+        wd.find_element_by_css_selector('input[type="button"][value="Delete"]').click()
+        wd.switch_to_alert().accept()
+        wd.find_element_by_css_selector("div.msgbox")
+
+        self.open_home()
+        self.contact_cache = None
