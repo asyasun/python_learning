@@ -1,5 +1,6 @@
 import re
 import random
+from model.Contact import Contact
 
 #
 # def test_phones_homepage_vs_edit_page(app):
@@ -13,7 +14,7 @@ def merge_phones(contact):
     return '\n'.join(filter(lambda x: x != "",
                             map(lambda x: clear(x),
                                 filter(lambda x: x is not None,
-                                       [contact.phone, contact.work_phone, contact.mobile, contact.secondary_phone]))))
+                                       [contact.phone, contact.mobile, contact.work_phone, contact.secondary_phone]))))
 
 
 def test_phones_view_page_vs_edit_page(app):
@@ -47,3 +48,19 @@ def test_homepage_vs_edit_page(app):
     assert contact_from_homepage.all_emails == merge_emails(contact_from_edit_page)
 
     assert contact_from_homepage.all_phones_from_homepage == merge_phones(contact_from_edit_page)
+
+
+def test_homepage_vs_db(app, db):
+    contacts_from_db = sorted(db.get_contact_list(), key=Contact.id_or_max)
+    contacts_from_homepage = sorted(app.contact.get_contact_list(), key=Contact.id_or_max)
+
+    for i in range(len(contacts_from_db)):
+        contact_from_db = contacts_from_db[i]
+        contact_from_homepage = contacts_from_homepage[i]
+        print('Сравниваем контракт "%s" и "%s"' % (str(contact_from_homepage), str(contact_from_db)))
+
+        assert contact_from_homepage.name == contact_from_db.name
+        assert contact_from_homepage.last_name == contact_from_db.last_name
+        assert contact_from_homepage.address == contact_from_db.address
+        assert contact_from_homepage.all_emails == merge_emails(contact_from_db)
+        assert contact_from_homepage.all_phones_from_homepage == merge_phones(contact_from_db)
